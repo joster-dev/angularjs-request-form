@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html id="data-ng-app" data-ng-app="ebpApp">
+<head>
+	<meta charset="utf-8" />
+	<title>User ID Request Service</title>
+
+	<link href="css/default.css" rel="stylesheet" />
+	<script src="js/angular.min.js" type="text/javascript"></script>
+	<script src="js/jquery-2.0.2.min.js" type="text/javascript"></script>
+	<script src="js/ebpRequest.js" type="text/javascript"></script>
+</head>	
+<body
+data-ng-controller="appCtrl"
+data-ng-init="changeViews(-1)">
+	<div 
+	id="sidebar">
+		<div>
+			<h1>Company</h1>
+		</div>
+		<div
+		id="pageinfo">
+			<h2>{{session.displayedPage}}</h2>	
+		</div>
+		<div
+		id="navigation">
+			<button 
+			class="sideButton"
+			data-ng-click="changeViews(-1)">Home</button>
+			<button 
+			class="sideButton"
+			data-ng-click="changeViews(0)">Create Request</button>
+			<button 
+			class="sideButton"
+			data-ng-click="changeViews(-2)">Search Requests</button>
+		</div>
+		<div
+		id="action">
+			<button
+			class="sideButton"
+			data-ng-repeat="action in session.actions"
+			data-ng-click="actionClick(action)">
+				{{action}}
+			</button>
+		</div>
+	</div>
+
+
+
+
+
+	<div 
+	id="main">
+
+
+
+
+		<div
+		id="home"
+		data-ng-show="session.showHome">
+			<div>
+				<h2>Your Tickets</h2>
+				<p>Tickets where you are the requestor, user, manager or Tickets that require your action.</p>
+			</div>
+			<div
+			class="row"
+			data-ng-repeat="item in session.searchResults"
+			data-ng-click="changeViews(item.requestNumber)">
+				<h2>Request # {{item.requestNumber}}</h2>
+				<div>
+					<label>User : </label><input type="text" data-ng-model="item.fullName" readonly>
+				</div>
+				<div>
+					<label>Status : </label><input type="text" data-ng-model="item.requestStatus" readonly>
+				</div>
+				<div>
+					<label>Request Date : </label><input type="text" data-ng-model="item.requestDate" readonly>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+		<div
+		id="search"
+		data-ng-show="session.showSearch">
+			<div>
+				<div>
+				<button type="button" data-ng-click="exportCsvClick()">Export Results to CSV</button>
+					<div>
+						<label>Show only Open requests</label><input type="checkbox" data-ng-model="session.searchToggle">
+					</div>
+				</div>
+				<div>
+					<label>Search : </label>
+					<input type="text" data-ng-model="session.searchTerm">
+					<label>In : </label>
+					<select
+					data-ng-model="session.searchFilter">
+						<option>User</option>
+						<option>Status</option>
+						<option>Role</option>
+						<option>Last Name</option>
+						<option>Request Number</option>
+						<option>All</option>
+					</select>
+					<button type="button" data-ng-click="searchClick(0)">Search</button>
+				</div>
+			</div>
+			<table>
+				<tbody>
+					<tr>
+						<th>User</th>
+						<th>Submitter</th>
+						<th>Manager</th>
+						<th>Request Submitted</th>
+						<th>Current Status</th>
+						<th>EBP Role</th>
+						<th>EBP Action</th>
+						<th>SAP System</th>
+					</tr>
+					<tr
+					class="searchRow"
+					data-ng-repeat="result in session.searchResults"
+					data-ng-click="changeViews(result.id)">
+						<td>{{result.user.fullName}}</td>
+						<td>{{result.submitter}}</td>
+						<td>{{result.manager}}</td>
+						<td>{{result.requestDate}}</td>
+						<td>{{result.requestStatus}}</td>
+						<td>{{result.ebpRole}}/td>
+						<td>{{result.ebpAction}}</td>
+						<td>{{result.sapSystem}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+
+
+		
+		<div
+		id="gdpSearch"
+		data-ng-show="session.showGdpSearch">
+			<div>
+				<div>
+				<button type="button" data-ng-click="exportCsvClick()">Export Results to CSV</button>
+					<div>
+						<label>Show only Active employees</label><input type="checkbox" data-ng-model="session.searchToggle">
+					</div>
+				</div>
+				<div>
+					<label>Search : </label>
+					<input type="text" data-ng-model="session.searchTerm">
+					<label>In : </label>
+					<select
+					data-ng-model="session.searchFilter">
+						<option>User</option>
+						<option>GID</option>
+						<option>All</option>
+					</select>
+					<button type="button" data-ng-click="searchClick(1)">Search</button>
+				</div>
+			</div>
+			<table>
+				<tbody>
+					<tr>
+						<th>Full Name</th>
+						<th>GID</th>
+						<th>Org Code</th>
+					</tr>
+					<tr
+					data-ng-repeat="result in session.searchResults"
+					data-ng-click="gdpClick(result)">
+						<td>{{result.firstName}} {{result.lastName}}</td>
+						<td>{{result.GID}}</td>
+						<td>{{result.orgCode}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<button data-ng-click="session.showGdpSearch = false">Back</button>
+			</div>
+		</div>
+
+
+
+
+
+		<div
+		id="view"
+		data-ng-show="session.showView && !session.showGdpSearch">
+			<div>	
+				<h2>Request Information</h2>
+				<div>
+					<label>Request Date : </label><input type="text" data-ng-model="session.currentRequest.requestDate" readonly>
+				</div>
+				<div>
+					<label>Submitter : </label>
+						<input 
+						class="requestInput"
+						placeholder="FirstName LastName" 
+						data-ng-model="session.currentUser.name"
+						readonly>
+				</div>
+				<div>
+					<label>User : </label>
+					<div>
+						<input 
+						type="search" 
+						class="requestInput" 
+						placeholder="FirstName LastName"
+						data-ng-model="session.currentRequest.fullName">
+						<button 
+						type="button"
+						data-ng-click="session.gdpInputId = 0; changeViews(-3)">SCD Search</button>
+					</div>
+				</div>
+				<div>
+					<label>User Manager : </label>
+					<div>
+						<input 
+						type="search" 
+						class="requestInput"
+						placeholder="FirstName LastName"
+						data-ng-model="session.currentRequest.manager">
+						<button 
+						type="button"
+						data-ng-click="session.gdpInputId = 1; changeViews(-3); searchClick(1)">SCD Search</button>
+					</div>
+				</div>
+				<div>
+					<label>EBP Role : </label>
+					<select class="requestInput" data-ng-model="session.currentRequest.ebpRole">
+						<option>Requestor</option>
+						<option>Approver</option>
+						<option>Buyer</option>
+					</select>
+				</div>
+				<div>
+					<label>EBP Action : </label>
+					<select class="requestInput" data-ng-model="session.currentRequest.ebpAction">
+						<option>Create</option>
+						<option>Change</option>
+						<option>Delete</option>
+					</select>
+				</div>
+				<div>
+					<label>SAP System/Company Code : </label>
+					<select class="requestInput" data-ng-model="session.currentRequest.sapSystem">
+						<option>PD2/WW001</option>
+						<option>OPP/1300</option>
+						<option>RBP</option>
+						<option>PPR/Transmission Only</option>
+						<option>PT2/1000/3000</option>
+					</select>	
+				</div>
+				<div>
+					<label>User Remarks : </label>
+					<textarea class="requestInput" data-ng-model="session.currentRequest.requestRemarks"></textarea>
+				</div>
+			</div>
+			<div>
+				<h2>User Information</h2>
+				<div>
+					<label>Full Name : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.fullName">
+				</div>
+				<div>
+					<label>Last Name : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.lastName">
+				</div>	
+				<div>
+					<label>First Name : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.firstName">
+				</div>
+				<div>
+					<label>Middle Initial : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.middleInitial">
+				</div>
+				<div>
+					<label>NT ID : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.ntId">
+				</div>
+				<div>
+					<label>Email : </label><input type="email" class="userInput" data-ng-model="session.currentRequest.email">
+				</div>	
+				<div>
+					<label>GID : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.gid">
+				</div>
+				<div>
+					<label>Employee Type : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.employeeType">
+				</div>
+				<div>
+					<label>Employee Status : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.employeeStatus">
+				</div>
+				<div>
+					<label>Bell Phone : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.bellPhone">
+				</div>
+				<div>
+					<label>Bell Fax : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.bellFax">
+				</div>
+				<div>
+					<label>Job Title : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.jobTitle">
+				</div>	
+				<div>
+					<label>Business Unit : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.businessUnit">
+				</div>
+				<div>
+					<label>Division : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.division">
+				</div>
+				<div>
+					<label>Department : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.department">
+				</div>
+				<div>
+					<label>Manager : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.manager">
+				</div>
+				<div>
+					<label>Manager GID : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.managerGid">
+				</div>
+				<div>
+					<label>Manager Bell Phone : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.managerBellPhone">
+				</div>
+				<div>
+					<label>Manager Email : </label><input type="email" class="userInput" data-ng-model="session.currentRequest.managerEmail">
+				</div>
+				<div>
+					<label>Primary Site : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.primarySite">
+				</div>
+				<div>
+					<label>Office/Bay : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.officeBay">
+				</div>
+				<div>
+					<label>Address : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.address">
+				</div>
+				<div>
+					<label>Company : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.company">
+				</div>
+				<div>
+					<label>Country : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.country">
+				</div>
+				<div>
+					<label>SCN Code : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.scnCode">
+				</div>	
+				<div>
+					<label>Expense Cost Center : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.costCenter">
+				</div>
+				<div>
+					<label>PA/REQ LOA : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.spendLimit">
+				</div>	
+				<div>
+					<label>Org Code : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.orgCode">
+				</div>
+				<div>
+					<label>GG : </label><input type="text" class="userInput" data-ng-model="session.currentRequest.gg">
+				</div>	
+			</div>
+			<div>
+				<h2>Workflow</h2>
+				<table>
+					<tbody>
+						<tr>
+							<th>Step</th>
+							<th>Action</th>
+							<th>Assigned To</th>
+							<th>Assigned By</th>
+							<th>Date</th>
+						</tr>
+						<tr
+						class="workflowRow"
+						data-ng-repeat="work in session.currentRequest.workflowLog">
+							<td>{{work.step}}</td>
+							<td>{{work.action}}</td>
+							<td>{{work.assignedTo}}</td>
+							<td>{{work.assignedBy}}</td>
+							<td>{{work.date}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div>
+				<h2>Manager Approval</h2>
+				<div>
+					<label>Manager : </label><input type="text" class="managerInput" data-ng-model="session.currentRequest.manager" readonly>
+				</div>
+				<div>
+					<label>Date Approved : </label><input type="text" data-ng-model="session.currentRequest.mgrDateApproved" readonly>	
+				</div>
+				<div>
+					<label>Manager Remarks : </label>
+					<textarea class="managerInput" data-ng-model="session.currentRequest.mgrRemarks"></textarea>
+				</div>
+			</div>
+			<div>
+				<h2>HR Approval</h2>
+				<div>
+					<label>HR Role Approver : </label><input type="text" class="hrInput" data-ng-model="session.currentRequest.hrApprover">
+				</div>
+				<div>
+					<label>Date Approved : </label><input type="text" data-ng-model="session.currentRequest.hrDataApproved" readonly>
+				</div>
+				<div>
+					<label>PA/REQ LOA : </label><input type="text" class="hrInput" data-ng-model="session.currentRequest.paLoa">
+				</div>
+				<div>
+					<label>HR Approver Remarks : </label>
+					<textarea class="hrInput" data-ng-model="session.currentRequest.hrRemarks"></textarea>
+				</div>
+			</div>
+			<div>
+				<h2>EBP Role Approval</h2>
+				<div>
+					<label>EBP SoD Approver : </label><input type="text" class="ebpRoleInput" data-ng-model="session.currentRequest.ebpSodApprover">
+				</div>	
+				<div>
+					<label>Date Approved : </label><input type="text" data-ng-model="session.currentRequest.ebpSodDateApproved" readonly>
+				</div>
+				<div>
+					<label>EBP SoD Approver Remarks : </label>
+					<textarea class="ebpRoleInput" data-ng-model="session.currentRequest.ebpSodRemarks"></textarea>
+				</div>
+			</div>
+			<div>
+				<h2>EBP Administrator Approval</h2>	
+				<div>
+					<label>EBP Administrator : </label><input type="text" value="" class="ebpAdmininput" data-ng-model="session.currentRequest.ebpAdminApprover">
+				</div>
+				<div>
+					<label>Date Approved : </label><input type="text" data-ng-model="session.currentRequest.ebpAdminDateApproved" readonly>
+				</div>
+				<div>
+					<label>EBP Org ID : </label><input type="text" value="" class="ebpAdmininput" data-ng-model="session.currentRequest.ebpOrgId">
+				</div>
+				<div>
+					<label>EBP Delivery ID : </label><input type="text" value="" class="ebpAdmininput" data-ng-model="session.currentRequest.ebpDeliveryId">
+				</div>
+				<div>
+					<label>Approver Cost Center Responsibility : </label><input type="text" value="" class="ebpAdmininput" data-ng-model="session.currentRequest.approverCc">
+				</div>
+				<div>
+					<label>Expense Cost Center : </label><input type="text" value="" class="ebpAdmininput" data-ng-model="session.currentRequest.expenseCc">
+				</div>
+				<div>
+					<label>EBP Admin Approver Remarks : </label>
+					<textarea class="ebpAdmininput" data-ng-model="session.currentRequest.ebpAdminRemarks"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

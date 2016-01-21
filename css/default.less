@@ -1,0 +1,225 @@
+body {
+	position: absolute;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	font-family: arial;
+}
+
+.sideButton {
+	width: 80%;
+	height: 33.33%;
+}
+
+#sidebar {
+	position: fixed;
+	height: 100%;
+	width: 20%!important;
+	text-align: center;
+	div {
+		width: 100%;
+		* {
+			padding-top: 15px;
+			margin: 0;
+		}
+	}
+	div:nth-child(-n+2) { 
+		height: 10%;
+		background-color: #8FA671;
+	}
+	div:nth-child(n+3) { 
+		background-color: #0D3F40;
+		height: 40%
+	}
+}
+
+#main {
+	margin: 0 0% 0 20%;
+	padding: 0 2.5% 0 2.5%;
+	border-right: 2.5rem solid #487360;
+	border-left: 2.5rem solid #487360;
+	#home {
+		>div {	// Make top div equal to 20% length of page at least
+			margin-top: 30px;
+			border: 3px solid black;
+			h2 {
+				margin: 0;
+				padding-right: 15px;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				background-color: #8FA671;
+				text-align: right;
+				border-bottom: 3px solid black;
+			}
+			p { margin-left: 15px }
+			>div {
+				width: 100%;
+				display: inline-block;
+				margin: auto;
+				padding-top: 3px;
+				padding-bottom: 3px;
+				label { margin-left: 15px }
+				input {
+					margin-right: 15px;
+					width: 400px;
+					float:right;
+    				clear:both;
+				}
+			}
+			>div:nth-child(2n) { background-color: #F2D795 }
+		}
+
+		>div:nth-child(-n+1) { margin: 0 }
+	}
+	#view {
+		>div {
+			border: 3px solid black;
+			margin-top: 30px;
+			h2 {
+				margin: 0;
+				padding-right: 15px;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				background-color: #8FA671;
+				text-align: right;
+				border-bottom: 3px solid black;
+			}
+			table {
+				width: 100%;
+				tbody {
+					width: 100%;
+					>tr:nth-child(2n) { background-color: #F2D795 }
+				}
+			}
+			>div {
+				width: 100%;
+				display: inline-block;
+				margin: auto;
+				padding-top: 3px;
+				padding-bottom: 3px;
+				div {
+					float:right;
+    				clear:both;
+    				>*{
+    					margin-right: 15px;	
+    				}
+				}
+				label {
+					margin-left: 15px;
+					text-align: right;
+					width: 100px;
+				}
+				input {
+					margin-right: 15px;
+					width: 400px;
+					float:right;
+    				clear:both;
+				}
+				button {
+					//position: absolute;
+
+				}
+				select {
+					margin-right: 15px;
+					width: 400px;
+					float:right;
+    				clear:both;
+				}
+				textarea {
+					padding: 0;
+					margin-right: 15px;
+					width: 400px;
+					height: 35px;
+					float:right;
+    				clear:both;
+    				resize: none;
+				}
+			}
+			>div:nth-child(2n) { background-color: #F2D795 }
+		}
+		>div:nth-child(-n+1){ margin: 0 }
+
+	}
+	#search {
+		>div {
+			border: 3px solid black;
+			>div {
+				background-color: #8FA671;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				button { margin-left: 15px; }
+				>div {
+					display: inline-block;
+					border: 1px solid black;
+					margin-right: 15px;
+					float: right;
+    				clear: both;
+    				background-color: #003540;
+    				color: white;
+    				* { padding: 2px}
+				}
+				>label { 
+					margin-left: 15px;
+				 }
+			}
+			>div:nth-child(2) {
+				input { width: 20% }
+				select { width: 20% }
+				button {
+					margin-right: 15px;
+					float:right;
+    				clear:both;
+				}
+			}
+		}
+		table {
+			width: 100%;
+			tbody {
+				width: 100%;
+				tr:nth-child(2n) { background-color: #F2D795 }
+				tr:hover:nth-child(n+2) { background-color: yellow }
+			}
+		}
+	}
+	#gdpSearch {
+		>div {
+			border: 3px solid black;
+			>div {
+				background-color: #8FA671;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				button { margin-left: 15px; }
+				>div {
+					display: inline-block;
+					border: 1px solid black;
+					margin-right: 15px;
+					float: right;
+    				clear: both;
+    				background-color: #003540;
+    				color: white;
+    				* { padding: 3px}
+				}
+				>label { 
+					margin-left: 15px;
+				 }
+			}
+			>div:nth-child(2) {
+				input { width: 20% }
+				select { width: 20% }
+				button {
+					margin-right: 15px;
+					float:right;
+    				clear:both;
+				}
+			}
+		}
+		table {
+			width: 100%;
+			tbody {
+				width: 100%;
+				tr:nth-child(2n) { background-color: #F2D795 }
+				tr:hover:nth-child(n+2) { background-color: yellow }
+			}
+		}
+	}
+}
