@@ -1,6 +1,3 @@
-// Author  : Jacob Osterhout
-// Contact : jacob.osterhout@siemens.com
-
 'use strict';
 
 var settings = {
